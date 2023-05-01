@@ -1,13 +1,35 @@
-version: '3.8'
+version: '3.9'
+
 services:
-  db: 
-    image: mysql:latest
-    container_name: mysql_c
-    command: --default-authentication-plugin=mysql_native_password
+  db:
+    container_name: db
+    image: postgres:13
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-      MYSQL_DATABASE: nest_js_db
-      MYSQL_USER: my-user
-      MYSQL_PASSWORD: my-password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    volumes:
+      - dbdata:/var/lib/postgresql/data
     ports:
-      - "3306:3306"
+      - '5432:5432'
+    networks:
+      - mynetwork
+
+  app:
+    container_name: app
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+
+volumes:
+  dbdata:
+
+networks:
+  mynetwork:

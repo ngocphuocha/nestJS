@@ -3,18 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'postgres',
       host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'my-secret-pw',
-      database: 'nest_js_db',
+      port: 5432,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'mydatabase',
       entities: [__dirname + '/typeorm/entities/*.entity{.ts,.js}'],
-      // entities: [User, Profile],
       synchronize: true,
     }),
     UsersModule,
