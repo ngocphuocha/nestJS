@@ -2,11 +2,8 @@ FROM node:18
 
 WORKDIR /app
 
-RUN npm install -g @nestjs/cli
-
-COPY ./package.json .
-COPY ./yarn.lock .
-
+COPY package*.json .
+COPY yarn.lock .
 RUN yarn install
 
 COPY . .
