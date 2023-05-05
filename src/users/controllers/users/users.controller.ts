@@ -10,10 +10,13 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { Response } from 'express';
+import { User } from 'src/typeorm/entities/User.entity';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { CreateUserPostDto } from 'src/users/dtos/CreateUserPost.dto';
 import { CreateUserProfileDto } from 'src/users/dtos/CreateUserProfile.dto';
+import { ListUserDto } from 'src/users/dtos/Res/ListUser.dto';
 import { UpdateUserDto } from 'src/users/dtos/UpdateUser.dto';
 import { UsersService } from 'src/users/services/users/users.service';
 
@@ -22,12 +25,19 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @Get()
+  @ApiOkResponse({ type: [ListUserDto] })
   async getUsers(@Res() res: Response) {
     try {
       const users = await this.userService.findUsers();
+
+      const userDtos = users.map((user: User) => ({
+        id: user.id,
+        username: user.username,
+      }));
+
       return res
         .status(HttpStatus.OK)
-        .json({ message: 'Successfully', statusCode: HttpStatus.OK, users });
+        .json({ message: 'Successfully', statusCode: HttpStatus.OK, userDtos });
     } catch (error) {}
   }
 
