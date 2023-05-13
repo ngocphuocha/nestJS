@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -28,16 +29,20 @@ export class UsersController {
   @ApiOkResponse({ type: [ListUserDto] })
   async getUsers(@Res() res: Response) {
     try {
-      const users = await this.userService.findUsers();
+      const users: User[] = await this.userService.findUsers();
+      const userDto: ListUserDto = new ListUserDto();
 
-      const userDtos = users.map((user: User) => ({
-        id: user.id,
-        username: user.username,
-      }));
-
-      return res
-        .status(HttpStatus.OK)
-        .json({ message: 'Successfully', statusCode: HttpStatus.OK, userDtos });
+      const listUsers: ListUserDto[] = users.map((user: User) => {
+        userDto.id = user.id;
+        userDto.email = user.email;
+        userDto.username = user.username;
+        return userDto;
+      });
+      return res.status(HttpStatus.OK).json({
+        message: 'Successfully',
+        statusCode: HttpStatus.OK,
+        users: listUsers,
+      });
     } catch (error) {}
   }
 
@@ -46,8 +51,33 @@ export class UsersController {
     try {
       const { confirmPassword, ...userDetails } = createUserDto;
 
+      const existingUserByEmail = await this.userService.findByEmail(
+        userDetails.email,
+      );
+
+      if (existingUserByEmail) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Email is already in use',
+          statusCode: HttpStatus.BAD_REQUEST,
+        });
+      }
+
+      const existingUserByUsername = await this.userService.findByUsername(
+        userDetails.username,
+      );
+
+      if (existingUserByUsername) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'UserName is already in use',
+          statusCode: HttpStatus.BAD_REQUEST,
+        });
+      }
+
       if (confirmPassword !== userDetails.password) {
-        return 'Confirm password is not correct';
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Password confirm is not correct',
+          statusCode: HttpStatus.BAD_REQUEST,
+        });
       }
 
       await this.userService.createUser(userDetails);

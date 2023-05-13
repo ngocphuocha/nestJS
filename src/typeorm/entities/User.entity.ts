@@ -18,6 +18,9 @@ export class User {
   id: number;
 
   @Column({ unique: true })
+  email: string;
+
+  @Column({ unique: true })
   username: string;
 
   @Column()
@@ -31,9 +34,6 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
-
-  @Column({ nullable: true })
-  authStategy: string;
 
   @OneToOne(() => Profile)
   @JoinColumn()
