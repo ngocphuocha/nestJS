@@ -19,6 +19,10 @@ export class UsersService {
     @InjectRepository(UserPost) private postRepostiry: Repository<UserPost>,
   ) {}
 
+  async findById(id: number): Promise<User> {
+    return await this.userRepository.findOneBy({ id });
+  }
+
   async findByEmail(email: string): Promise<User> {
     return await this.userRepository.findOne({
       where: {

@@ -11,5 +11,6 @@ import { UserPost } from 'src/typeorm/entities/UserPost.entity';
   imports: [TypeOrmModule.forFeature([User, Profile, UserPost])],
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}
