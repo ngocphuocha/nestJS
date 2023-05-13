@@ -11,7 +11,9 @@ export class UsersService {
   ) {}
 
   public async getUsers(): Promise<User[]> {
-    return await this.userRepository.find({});
+    return await this.userRepository.find({
+      select: ['id', 'email'],
+    });
   }
 
   public async createUser(userInput: CreateUserInput): Promise<User> {
