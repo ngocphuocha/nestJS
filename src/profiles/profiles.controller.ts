@@ -3,10 +3,14 @@ import { CreateUserProfileDto } from './dtos/input/create-user-profile.dto';
 import { UsersService } from '../users/services/users/users.service';
 import { User } from '../typeorm/entities/User.entity';
 import { Response } from 'express';
+import { ProfilesService } from './profiles.service';
 
 @Controller('profiles')
 export class ProfilesController {
-  constructor(private readonly userServices: UsersService) {}
+  constructor(
+    private readonly userServices: UsersService,
+    private readonly profileService: ProfilesService,
+  ) {}
 
   @Post()
   async createUserProfile(
@@ -23,6 +27,8 @@ export class ProfilesController {
           .status(HttpStatus.BAD_REQUEST)
           .json({ message: 'Bad Request', statusCode: HttpStatus.BAD_REQUEST });
       }
+
+      await this.profileService.createUserProfile(existedUser, profileArgs);
 
       return res
         .status(HttpStatus.CREATED)

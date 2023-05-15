@@ -1,6 +1,5 @@
 import {
   Body,
-  ConflictException,
   Controller,
   Delete,
   Get,
@@ -84,8 +83,12 @@ export class UsersController {
       return res
         .status(HttpStatus.CREATED)
         .json({ message: 'Successfully', statusCode: HttpStatus.CREATED });
-    } catch (error) {
-      console.error(`Error creating user: ${error.message}`);
+    } catch (e) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: e,
+        message: 'Internal server error',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     }
   }
 

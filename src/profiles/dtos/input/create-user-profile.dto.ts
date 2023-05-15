@@ -7,10 +7,10 @@ export class CreateUserProfileDto {
   userId: number;
 
   @IsNotEmpty()
-  firstname: string;
+  firstName: string;
 
   @IsNotEmpty()
-  lastname: string;
+  lastName: string;
 
   @IsNotEmpty()
   age: number;

@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from './User.entity';
 
 @Entity({ name: 'profiles' })
 export class Profile {
@@ -32,4 +34,7 @@ export class Profile {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToOne(() => User, (user) => user.profile)
+  user: User;
 }

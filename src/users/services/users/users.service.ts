@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Post } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from 'src/typeorm/entities/Profile.entity';
 import { User } from 'src/typeorm/entities/User.entity';
@@ -16,13 +16,12 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Profile) private profileRepository: Repository<Profile>,
-    @InjectRepository(UserPost) private postRepostiry: Repository<UserPost>,
+    @InjectRepository(UserPost) private postRepository: Repository<UserPost>,
   ) {}
 
   async findById(id: number): Promise<User> {
     return await this.userRepository.findOneBy({ id });
   }
-
   async findByEmail(email: string): Promise<User> {
     return await this.userRepository.findOne({
       where: {
@@ -44,7 +43,12 @@ export class UsersService {
   }
 
   async createUser(userDetails: CreateUserParams) {
+    console.log(userDetails);
     const newUser = this.userRepository.create({ ...userDetails });
+
+    // Create user profile
+    newUser.profile = this.profileRepository.create({ ...userDetails });
+
     return await this.userRepository.save(newUser);
   }
 
@@ -70,8 +74,7 @@ export class UsersService {
     }
 
     const newProfile = this.profileRepository.create(createUserProfile);
-    const savedProfile = await this.profileRepository.save(newProfile);
-    user.profile = savedProfile;
+    user.profile = await this.profileRepository.save(newProfile);
     return this.userRepository.save(user);
   }
 
@@ -88,11 +91,11 @@ export class UsersService {
       );
     }
 
-    const newPost = this.postRepostiry.create({
+    const newPost = this.postRepository.create({
       ...createUserPostDetails,
       user,
     });
 
-    return this.postRepostiry.save(newPost);
+    return await this.postRepository.save(newPost);
   }
 }

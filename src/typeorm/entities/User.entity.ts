@@ -35,7 +35,7 @@ export class User {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @OneToOne(() => Profile)
+  @OneToOne(() => Profile, (profile) => profile.user)
   @JoinColumn()
   profile: Profile;
 
